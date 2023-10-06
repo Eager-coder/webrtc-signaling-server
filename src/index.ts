@@ -38,7 +38,7 @@ function broadcast(data: ResponseData, sockets: Set<WebSocket>) {
 function getUids(sockets: Set<WebSocket>) {
   let uids: Set<number> = new Set();
   for (let socket of sockets) {
-    if (socket.uid) {
+    if (socket.uid && socket.OPEN) {
       uids.add(socket.uid);
     }
   }
