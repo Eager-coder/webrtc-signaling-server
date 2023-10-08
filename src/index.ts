@@ -55,8 +55,6 @@ function getByUid(sockets: Set<WebSocket>, uid: number) {
 }
 
 wss.on("connection", function connection(socket: WebSocket) {
-  // clientList.add(socket)
-
   socket.on("message", (dataString: string) => {
     let data: RequestData;
     try {
@@ -67,7 +65,7 @@ wss.on("connection", function connection(socket: WebSocket) {
 
     switch (data.event) {
       case "client:connect": {
-        console.log(data.uid, "connected");
+        console.log(data.uid, "client:connect");
         socket.uid = data.uid;
         const response: ResponseData = {
           event: "server:userlist",
@@ -81,7 +79,7 @@ wss.on("connection", function connection(socket: WebSocket) {
       case "client:offer": {
         const { receiverUid, offer } = data;
         const receiverSocket = getByUid(wss.clients, receiverUid);
-
+        console.log(data.uid, "client:offer");
         const response: ResponseData = {
           event: "server:offer",
           offer: offer,
@@ -93,7 +91,7 @@ wss.on("connection", function connection(socket: WebSocket) {
       }
       case "client:answer": {
         const { callerUid, answer } = data;
-
+        console.log(data.uid, "client:answer");
         const receiverSocket = getByUid(wss.clients, callerUid);
 
         const response: ResponseData = {
@@ -106,13 +104,13 @@ wss.on("connection", function connection(socket: WebSocket) {
         break;
       }
       case "client:iceCandidate": {
-        const { receiverUid, candidates } = data;
+        const { receiverUid, candidate } = data;
         const receiverSocket = getByUid(wss.clients, receiverUid);
-        console.log(socket.uid, receiverSocket?.uid);
+        console.log(socket.uid, receiverSocket?.uid, "client:iceCandidate");
 
         const response: ResponseData = {
           event: "server:iceCandidate",
-          candidates,
+          candidate,
           receiverUid,
         };
         receiverSocket?.send(JSON.stringify(response));
